@@ -34,7 +34,7 @@ jobs:
             done
           echo "::set-output name=tested::true"; 
         env:
-          TRIGGERS: test_builder.py
+          TRIGGERS: Builder_test.py
 
       - name: Notify
         run: |
