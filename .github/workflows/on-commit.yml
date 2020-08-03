@@ -3,7 +3,7 @@ name: on-commit
 on:
   push:
     branches:
-      - develop
+      - feat/pytest
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     outputs:
       tested: ${{steps.testing.outputs.tested}}
-      
+
     steps:
       - name: Prerun
         run: python3 -m pip install --upgrade pip setuptools wheel
