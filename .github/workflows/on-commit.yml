@@ -3,21 +3,39 @@ name: on-commit
 on:
   push:
     branches:
-      - master
+      - develop
 
 jobs:
-  my-simple-job:
+  build:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    outputs:
+      tested: ${{steps.testing.outputs.tested}}
+      
     steps:
       - name: Prerun
         run: python3 -m pip install --upgrade pip setuptools wheel
 
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Pytest
+        id: testing
+        run: |
+          pip install pytest 
+          pip install -e .
+          for FILEPATH in $TRIGGERS;
+            do 
+              pytest $FILEPATH;
+            done
+          echo "::set-output name=tested::true"; 
+        env:
+          TRIGGERS: test_builder.py
 
       - name: Notify
-        run: cd chore && python3 -m pip install -r requirements.txt && python3 tgNotifier.py
-        
+        run: |
+          cd chore
+          python3 -m pip install -r requirements.txt.py
+          python3 tgNotifier
