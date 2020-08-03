@@ -24,8 +24,8 @@ jobs:
       - name: Pytest
         id: testing
         run: |
-          pip install pytest 
-          pip install -e .
+          python3 -m pip install pytest 
+          python3 -m pip install -e .
           PATH="/home/runner/.local/bin:${PATH}"
           export PATH
           for FILEPATH in $TRIGGERS;
