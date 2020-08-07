@@ -1,0 +1,12 @@
+name: Sample 2
+description: a minimum working unit of a containerized encoder, used for tutorial only
+author: antonkurenkov
+url: https://github.com
+documentation: https://github.com
+version: 0.0.1
+license: apache-2.0
+keywords:
+  - example
+  - demo
+  - toy-example
+path: .

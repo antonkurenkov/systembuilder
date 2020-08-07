@@ -1,36 +1,68 @@
+import os
+from pprint import pprint
 import json
 import subprocess
-from subprocess import Popen
 from datetime import datetime
 from src.main.manifest import Manifest
 
 
-class Builder:
-    def clone_repo(self, url):
-        Popen(['git', 'clone', url, './repo/'])
+class Builder(Manifest):
 
-    @staticmethod
-    def generate_status_file(status, message=""):
-        json_status = {}
+    def __init__(self, location='.'):
+        self.cmd = ['docker', 'buildx', 'build']
+        self.builder_release = self.get_builder_version()
+        self.location = os.path.join(location)
+
+    def get_builder_version(self):
         with open('version.txt', 'r') as version_file:
-            json_status['release'] = float(version_file.read())
-        json_status['datetime'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        json_status['status'] = status
-        json_status['message'] = message
+            release = float(version_file.read())
+        return release
+
+    def get_files(self):
+        projects = []
+        for path in os.listdir(self.location):
+            tmp_ = os.path.join(self.location, path)
+            if os.path.isdir(tmp_):
+                if os.path.isfile(os.path.join(tmp_, 'manifest.yml')):
+                    projects.append(path)
+        return projects
+
+    def load_projects(self, projects):
+        locate = lambda p: os.path.join(os.path.join(self.location, p), 'manifest.yml')
+        load = lambda p: self.load_file(locate(p))
+        return [(p, load(p)) for p in projects]
+
+    def upload_status(self, json_status):
         with open('status.json', 'w') as outfile:
             json.dump(json_status, outfile)
 
-    # @staticmethod
-    # def get_parse():
-    #     parser = argparse.ArgumentParser()
-    #     parser.add_argument('--platform', type=str, help='Set target platform for build', dest='platform')
-    #     parser.add_argument('--path', type=str, help='Set path to docker file', default='.', dest='path')
-    #     return parser
+    def update_status(self, pool):
+        json_status = {}
+        for _, item in pool:
+            item['release'] = self.builder_release
+            item['datetime'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            name = item.pop('name')
+            json_status[name] = item
+        return json_status
 
-    @staticmethod
-    def get_build():
-        yaml = Manifest()
-        data = yaml.load_file('.').items()
-        docker_build_cmd = ['docker', 'buildx', 'build']
-        docker_build_arg = ['--platform', data['platform'], data['path']]
-        subprocess.check_call(docker_build_cmd + docker_build_arg)
+    def build(self):
+        projects = self.get_files()
+        pool = self.load_projects(projects)
+        for name, scheme in pool:
+            path = os.path.join(name, scheme.pop('path'))
+            path = os.path.join('examples', path)
+            path = [os.path.abspath(path)]
+            try:
+                print(f'Building {path}')
+                pprint(scheme)
+                subprocess.check_call(self.cmd + path)
+                status = True
+                message = ""
+            except Exception as e:
+                status = False
+                message = e
+            scheme['status']= status
+            scheme['message'] = message
+
+        updated_status = self.update_status(pool)
+        self.upload_status(updated_status)
