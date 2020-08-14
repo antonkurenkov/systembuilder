@@ -3,7 +3,7 @@ name: on-commit
 on:
   push:
     branches:
-      - ci/itegration
+      - develop
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2 
         with:
-          repository: efimi5/systembuilder
+          repository: antonkurenkov/systembuilder
           token: ${{ secrets.DEV_BOT_TOKEN }}
 
       - name: Pytest
@@ -54,12 +54,12 @@ jobs:
         uses: ad-m/github-push-action@master
         with: 
           github_token: ${{ secrets.DEV_BOT_TOKEN }}
-          repository: efimi5/systembuilder
-          branch: ci/itegration
+          repository: antonkurenkov/systembuilder
+          branch: develop
           force: true
 
-      # - name: Notify
-      #   run: |
-      #     cd chore
-      #     python3 -m pip install -r requirements.txt
-      #     python3 tgNotifier.py
+      - name: Notify
+        run: |
+          cd chore
+          python3 -m pip install -r requirements.txt
+          python3 tgNotifier.py
