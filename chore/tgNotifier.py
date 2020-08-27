@@ -9,7 +9,7 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 class Parser:
 
 	def __init__(self):
-		self.url = 'https://raw.githubusercontent.com/antonkurenkov/systembuilder/develop/status.json'
+		self.url = 'https://raw.githubusercontent.com/antonkurenkov/systembuilder/develop/examples/status.json'
 
 
 	def parse(self):
