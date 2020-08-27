@@ -29,7 +29,7 @@ class Notifier:
 		commit_message = subprocess.Popen(['git', 'log', '-1', '--oneline'], stdout=subprocess.PIPE).communicate()[-1]
 		message = f"Автор сборки: {author}\nКоммит: {commit_message}\n\n"
 		for key, value in self.status.items():
-			message += f"Образ: {key}\nРезультат сборки: {'Успешно' if value['status'] else value['message']}\nВерсия релиза: {value.get('release')}\nДата сборки: {value[datetime][:10]}\n\n"
+			message += f"Образ: {key}\nРезультат сборки: {'Успешно' if value['status'] else value['message']}\nВерсия релиза: {value.get('release')}\nДата сборки: {value['datetime'][:10]}\n\n"
 		return message
 		# return f'''Статус сборки: {self.status[2]["status"]}
 		# Версия релиза: {self.status[0]["release"]}
