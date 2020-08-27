@@ -27,9 +27,11 @@ class Notifier:
 		self.bot = telebot.TeleBot(TOKEN)
 
 	def prepare(self):
-		author = subprocess.Popen(['git', 'log', '-1', '--pretty=%an'], stdout=subprocess.PIPE).communicate()
-		commit_message = subprocess.Popen(['git', 'log', '-1', '--oneline'], stdout=subprocess.PIPE).communicate()[-1]
-		message = f"Автор сборки: {author}\nКоммит: {commit_message}\n\n"
+		author = subprocess.Popen(['git', 'log', '-1', '--pretty=%an'], stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+		commit = subprocess.Popen(['git', 'log', '-1', '--oneline'], stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+		commit_id = commit.split()[0]
+		commit_message = ' '.join(commit.split()[1:])
+		message = f"Author: {author}\nCommit ID: {commit_id}\nMessage: \"{commit_message}\"\n\n"
 		for key, value in self.status.items():
 			message += f"Образ: {key}\nРезультат сборки: {'Успешно' if value['status'] else value['message']}\nВерсия релиза: {self.version}\nДата сборки: {self.datetime[:10]}\n\n"
 		return message
