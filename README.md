@@ -1,6 +1,6 @@
 # Systembuilder
 
-version: 0.9
+version: 1.0
 ![](.github/.README_images/demo.gif)
 -----
 ## Описание проекта
