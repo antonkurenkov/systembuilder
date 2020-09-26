@@ -1,7 +1,7 @@
 # Systembuilder
 
 version: 0.9
-![](.github/.README_images/hub-builder-demo.gif)
+![](.github/.README_images/demo.gif)
 -----
 ## Описание проекта
 Облачная CI/CD система для автоматизирования процесса сборки-доставки-тестирования кода на основе формально заданных параметров среды.
